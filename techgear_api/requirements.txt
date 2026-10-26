@@ -1,0 +1,10 @@
+fastapi
+pydantic
+email-validator
+uvicorn
+httpx
+pymongo
+requests
+motor
+python-dotenv
+passlib[bcrypt]
