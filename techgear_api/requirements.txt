@@ -7,4 +7,6 @@ pymongo
 requests
 motor
 python-dotenv
-passlib[bcrypt]
+passlib==1.7.4
+bcrypt==4.0.1
+PyJWT>=2.10,<3.0

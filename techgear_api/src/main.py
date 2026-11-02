@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 
 from model.database import lifespan
-from routers import usuarios
 from routers import pedidos, productos, usuarios
 
 app = FastAPI(title="Taller FastAPI", lifespan=lifespan)

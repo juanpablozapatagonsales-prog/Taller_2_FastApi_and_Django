@@ -1,0 +1,263 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4ef">
+  <meta name="description" content="Tecnología útil, bien elegida y hecha para acompañarte todos los días.">
+  <title>TechGear — Tecnología para todos los días</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+  <link rel="stylesheet" href="{% static 'store/css/site.css' %}">
+</head>
+
+<body>
+  <form class="csrf-source" aria-hidden="true">{% csrf_token %}</form>
+  <div class="announcement">
+    <p>Envío gratis en pedidos seleccionados <span aria-hidden="true">·</span> Compra con calma, elige bien</p>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="wordmark" href="#inicio">
+        <span class="wordmark-icon" aria-hidden="true">t.</span>
+        <span>techgear<span class="wordmark-period">.</span></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"
+        aria-label="Abrir menú">
+        <span></span><span></span>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Navegación principal">
+        <a href="#coleccion">Colección</a>
+        <a href="#nosotros">Nuestra idea</a>
+        <button class="nav-auth" type="button" data-open-auth="login">Iniciar sesión</button>
+        <button class="account-button" type="button" data-open-auth="register">Crear cuenta <span
+            aria-hidden="true">↗</span></button>
+      </nav>
+      <button class="bag-button" type="button">
+        Bolsa <span class="bag-count" aria-live="polite">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero page-width" id="inicio">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-line"></span> Objetos para una vida conectada</p>
+        <h1>La tecnología<br>también puede<br><em>sentirse simple.</em></h1>
+        <p class="hero-description">Piezas que hacen bien su trabajo, se ven bien en tu espacio y se quedan contigo
+          mucho tiempo.</p>
+        <a class="button button-dark" href="#coleccion">Explorar la colección <span aria-hidden="true">↘</span></a>
+        <div class="hero-note">
+          <div class="avatar-stack" aria-hidden="true"><span>J</span><span>M</span><span>A</span></div>
+          <p>Elegida con cuidado.<br><strong>Usada todos los días.</strong></p>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-image-wrap">
+          <img class="hero-image"
+            src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&amp;fit=crop&amp;w=960&amp;q=72"
+            srcset="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&amp;fit=crop&amp;w=640&amp;q=72 640w, https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&amp;fit=crop&amp;w=960&amp;q=72 960w, https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&amp;fit=crop&amp;w=1200&amp;q=72 1200w"
+            sizes="(max-width: 680px) calc(100vw - 58px), (max-width: 980px) 55vw, 45vw"
+            width="1200" height="900" fetchpriority="high" decoding="async"
+            alt="Audífonos inalámbricos color mostaza sobre fondo cálido">
+          <div class="image-caption"><span>01 / 04</span><span>Sonido para quedarse</span></div>
+        </div>
+        <div class="hero-sticker" aria-label="Selección de temporada">
+          <span>SELECCIÓN</span><strong>de<br>temporada</strong><span class="sticker-star" aria-hidden="true">✳</span>
+        </div>
+        <p class="visual-index">EST. 2024 <span>—</span> BOGOTÁ, COLOMBIA</p>
+      </div>
+    </section>
+
+    <section class="ticker" aria-label="Nuestra selección">
+      <div class="ticker-track">
+        <span>Menos, pero mejor</span><i aria-hidden="true">✳</i><span>Diseño que dura</span><i
+          aria-hidden="true">✳</i><span>Tecnología con intención</span><i aria-hidden="true">✳</i><span>Menos, pero
+          mejor</span><i aria-hidden="true">✳</i><span>Diseño que dura</span><i aria-hidden="true">✳</i>
+      </div>
+    </section>
+
+    <section class="collection page-width" id="coleccion">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow"><span class="eyebrow-line"></span> Pocas cosas. Las correctas.</p>
+          <h2>Una buena elección<br>se nota en el <em>día a día.</em></h2>
+        </div>
+        <p class="section-intro">Una selección pequeña de accesorios que hacen más fácil trabajar, escuchar y
+          desconectar.</p>
+      </div>
+      <div class="filters" role="group" aria-label="Filtrar productos">
+        <button class="filter-chip is-active" type="button" data-filter="all">Todo <span>04</span></button>
+        <button class="filter-chip" type="button" data-filter="audio">Audio</button>
+        <button class="filter-chip" type="button" data-filter="desk">Escritorio</button>
+        <button class="filter-chip" type="button" data-filter="everyday">Para llevar</button>
+      </div>
+      <div class="product-grid">
+        <article class="product-card" id="producto-audio" data-category="audio">
+          <a class="product-image product-image-sand" href="#producto-audio">
+            <img
+              src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&amp;fit=crop&amp;w=640&amp;q=72"
+              srcset="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&amp;fit=crop&amp;w=400&amp;q=72 400w, https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&amp;fit=crop&amp;w=640&amp;q=72 640w, https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&amp;fit=crop&amp;w=900&amp;q=72 900w"
+              sizes="(max-width: 680px) 45vw, (max-width: 980px) 45vw, 25vw"
+              width="900" height="1100" loading="lazy" decoding="async"
+              alt="Audífonos Studio One">
+            <span class="product-tag">Favorito</span>
+            <span class="product-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="product-meta"><span>Audio · Inalámbrico</span><span>01</span></div>
+          <div class="product-title-row">
+            <h3>Studio One</h3><span>$ 389.000</span>
+          </div>
+          <p class="product-detail">Sonido envolvente. Cero distracciones.</p>
+          <button class="add-button" type="button" data-add-to-bag="Studio One">Añadir a la bolsa <span
+              aria-hidden="true">+</span></button>
+        </article>
+        <article class="product-card" id="producto-luz" data-category="desk">
+          <a class="product-image product-image-blue" href="#producto-luz" aria-label="Ver lámpara de escritorio Forma">
+            <img
+              src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&amp;fit=crop&amp;w=640&amp;q=72"
+              srcset="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&amp;fit=crop&amp;w=400&amp;q=72 400w, https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&amp;fit=crop&amp;w=640&amp;q=72 640w, https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&amp;fit=crop&amp;w=900&amp;q=72 900w"
+              sizes="(max-width: 680px) 45vw, (max-width: 980px) 45vw, 25vw"
+              width="900" height="1100" loading="lazy" decoding="async"
+              alt="Lámpara de escritorio de diseño">
+            <span class="product-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="product-meta"><span>Escritorio · Luz</span><span>02</span></div>
+          <div class="product-title-row">
+            <h3>Forma Light</h3><span>$ 249.000</span>
+          </div>
+          <p class="product-detail">Luz amable para ideas largas.</p>
+          <button class="add-button" type="button" data-add-to-bag="Forma Light">Añadir a la bolsa <span
+              aria-hidden="true">+</span></button>
+        </article>
+        <article class="product-card" id="producto-reloj" data-category="everyday">
+          <a class="product-image product-image-green" href="#producto-reloj">
+            <img
+              src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&amp;fit=crop&amp;w=640&amp;q=72"
+              srcset="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&amp;fit=crop&amp;w=400&amp;q=72 400w, https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&amp;fit=crop&amp;w=640&amp;q=72 640w, https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&amp;fit=crop&amp;w=900&amp;q=72 900w"
+              sizes="(max-width: 680px) 45vw, (max-width: 980px) 45vw, 25vw"
+              width="900" height="1100" loading="lazy" decoding="async"
+              alt="Reloj minimalista con correa clara">
+            <span class="product-tag product-tag-new">Nuevo</span>
+            <span class="product-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="product-meta"><span>Para llevar · Tiempo</span><span>03</span></div>
+          <div class="product-title-row">
+            <h3>Tempo Watch</h3><span>$ 529.000</span>
+          </div>
+          <p class="product-detail">Tu ritmo. Sin mirar tanto el teléfono.</p>
+          <button class="add-button" type="button" data-add-to-bag="Tempo Watch">Añadir a la bolsa <span
+              aria-hidden="true">+</span></button>
+        </article>
+        <article class="product-card" id="producto-parlante" data-category="desk">
+          <a class="product-image product-image-lilac" href="#producto-parlante"
+            aria-label="Ver parlante portátil Nido">
+            <img
+              src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&amp;fit=crop&amp;w=640&amp;q=72"
+              srcset="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&amp;fit=crop&amp;w=400&amp;q=72 400w, https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&amp;fit=crop&amp;w=640&amp;q=72 640w, https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&amp;fit=crop&amp;w=900&amp;q=72 900w"
+              sizes="(max-width: 680px) 45vw, (max-width: 980px) 45vw, 25vw"
+              width="900" height="1100" loading="lazy" decoding="async"
+              alt="Parlante portátil compacto">
+            <span class="product-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="product-meta"><span>Audio · Compacto</span><span>04</span></div>
+          <div class="product-title-row">
+            <h3>Nido Speaker</h3><span>$ 219.000</span>
+          </div>
+          <p class="product-detail">Pequeño por fuera, grande en compañía.</p>
+          <button class="add-button" type="button" data-add-to-bag="Nido Speaker">Añadir a la bolsa <span
+              aria-hidden="true">+</span></button>
+        </article>
+      </div>
+      <p class="catalog-note">Precios de referencia · Consulta disponibilidad antes de comprar.</p>
+    </section>
+
+    <section class="manifesto" id="nosotros">
+      <div class="manifesto-inner page-width">
+        <p class="eyebrow"><span class="eyebrow-line"></span> Una nota sobre elegir</p>
+        <h2>No necesitas más tecnología.<br>Necesitas <em>la que sí usas.</em></h2>
+        <div class="manifesto-bottom">
+          <span class="manifesto-mark" aria-hidden="true">t.</span>
+          <p>Buscamos objetos bien pensados, cómodos de usar y honestos con lo que ofrecen. Nada más. Nada que sobre.
+          </p>
+          <a href="#coleccion" class="text-link">Conoce la selección <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="newsletter page-width">
+      <div>
+        <p class="eyebrow"><span class="eyebrow-line"></span> Tu espacio, a tu ritmo</p>
+        <h2>Lo bueno es<br><em>tenerlo cerca.</em></h2>
+      </div>
+      <div class="account-invite">
+        <p>Crea una cuenta para tener tu propio espacio en TechGear y volver cuando quieras.</p>
+        <button class="button button-dark" type="button" data-open-auth="register">Crear mi cuenta <span
+            aria-hidden="true">↗</span></button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner page-width">
+      <a class="wordmark footer-wordmark" href="#inicio"><span class="wordmark-icon"
+          aria-hidden="true">t.</span><span>techgear<span class="wordmark-period">.</span></span></a>
+      <p>Diseñado para el día a día.<br>Hecho en Bogotá, Colombia.</p>
+      <a href="#inicio" class="back-top">Volver arriba ↑</a>
+      <span class="copyright">© 2026 TECHGEAR</span>
+    </div>
+  </footer>
+
+  <dialog class="auth-dialog" aria-labelledby="auth-title">
+    <div class="auth-shell">
+      <button class="dialog-close" type="button" aria-label="Cerrar">×</button>
+      <div class="auth-aside">
+        <a class="wordmark" href="#inicio"><span class="wordmark-icon" aria-hidden="true">t.</span><span>techgear<span
+              class="wordmark-period">.</span></span></a>
+        <p class="auth-aside-copy">Una cuenta sencilla para volver a lo que te gusta.</p>
+        <span class="auth-aside-note">TECNOLOGÍA, CON INTENCIÓN.</span>
+      </div>
+      <div class="auth-content">
+        <p class="eyebrow"><span class="eyebrow-line"></span> Tu espacio</p>
+        <h2 id="auth-title">Qué bueno<br><em>verte por aquí.</em></h2>
+        <div class="auth-tabs" role="tablist" aria-label="Acceso a tu cuenta">
+          <button type="button" class="auth-tab is-active" role="tab" aria-selected="true"
+            data-auth-mode="login">Iniciar sesión</button>
+          <button type="button" class="auth-tab" role="tab" aria-selected="false" data-auth-mode="register">Crear
+            cuenta</button>
+        </div>
+        <p class="auth-message" aria-live="polite"></p>
+        <form class="auth-form" id="login-form" novalidate>
+          <label for="login-email">Correo electrónico</label>
+          <input id="login-email" name="email" type="email" autocomplete="email" placeholder="nombre@correo.com"
+            required>
+          <label for="login-password">Contraseña</label>
+          <input id="login-password" name="password" type="password" autocomplete="current-password"
+            placeholder="Tu contraseña" required>
+          <button class="button button-dark auth-submit" type="submit">Entrar <span aria-hidden="true">↗</span></button>
+        </form>
+        <form class="auth-form" id="register-form" hidden novalidate>
+          <label for="register-username">Cómo te llamas</label>
+          <input id="register-username" name="username" type="text" autocomplete="username" minlength="3" maxlength="50"
+            placeholder="Tu nombre" required>
+          <label for="register-email">Correo electrónico</label>
+          <input id="register-email" name="email" type="email" autocomplete="email" placeholder="nombre@correo.com"
+            required>
+          <label for="register-password">Crea una contraseña</label>
+          <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="6"
+            maxlength="72" placeholder="Al menos 6 caracteres" required>
+          <button class="button button-dark auth-submit" type="submit">Crear mi cuenta <span
+              aria-hidden="true">↗</span></button>
+        </form>
+        <button class="signout-button" type="button" hidden>Cerrar sesión</button>
+      </div>
+    </div>
+  </dialog>
+  <div class="toast" role="status" aria-live="polite"></div>
+  <script src="{% static 'store/js/site.js' %}" defer></script>
+</body>
+
+</html>
