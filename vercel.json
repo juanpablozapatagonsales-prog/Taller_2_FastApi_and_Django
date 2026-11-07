@@ -2,6 +2,7 @@
   "services": {
     "django": {
       "root": ".",
+      "entrypoint": "techgear_web/wsgi.py",
       "bindings": [
         {
           "type": "service",
