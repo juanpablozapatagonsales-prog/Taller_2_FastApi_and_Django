@@ -1,0 +1,27 @@
+{
+  "services": {
+    "django": {
+      "root": ".",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "api",
+          "format": "url",
+          "env": "API_URL"
+        }
+      ]
+    },
+    "api": {
+      "root": "techgear_api/",
+      "entrypoint": "src.main:app"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "django"
+      }
+    }
+  ]
+}

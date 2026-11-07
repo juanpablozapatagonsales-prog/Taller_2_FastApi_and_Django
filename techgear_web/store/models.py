@@ -1,3 +1,1 @@
-from django.db import models
-
-# Create your models here.
+"""La tienda no guarda cuentas ni productos en la base de datos de Django."""

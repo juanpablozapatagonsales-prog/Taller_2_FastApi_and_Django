@@ -1,0 +1,22 @@
+{% extends "store/base.html" %}
+
+{% block title %}Productos | TechGear{% endblock %}
+{% block description %}Consulta los productos activos del catálogo TechGear.{% endblock %}
+
+{% block content %}
+<section aria-labelledby="products-heading">
+  <div class="mb-4">
+    <h1 id="products-heading" class="display-6 fw-bold">Productos</h1>
+    <p class="lead text-body-secondary">Consulta los productos activos del catálogo TechGear.</p>
+  </div>
+  {% if productos %}
+  <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+    {% for producto in productos %}
+    {% include "store/product_card.html" with eager=True %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-secondary">No hay productos para mostrar.</div>
+  {% endif %}
+</section>
+{% endblock %}

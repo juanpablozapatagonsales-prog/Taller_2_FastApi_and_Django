@@ -16,19 +16,50 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+
 from techgear_web.store.views import (
-    current_user,
+    admin_dashboard,
+    admin_login,
+    client_login,
+    client_signup,
+    confirm_delete_product,
+    delete_product,
+    edit_product,
     home_view,
-    login_user,
-    logout_user,
-    register_user,
+    logout_view,
+    new_product,
+    products_view,
+    purchase_product,
 )
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", home_view, name="home"),
-    path("api/usuarios/", register_user, name="register-user"),
-    path("api/usuarios/login/", login_user, name="login-user"),
-    path("api/usuarios/logout/", logout_user, name="logout-user"),
-    path("api/usuarios/me/", current_user, name="current-user"),
+    path("ingresar/", client_login, name="client-login"),
+    path("admin-ingresar/", admin_login, name="admin-login"),
+    path("registro/", client_signup, name="client-signup"),
+    path("salir/", logout_view, name="logout"),
+    path("productos/", products_view, name="catalog-products"),
+    path(
+        "productos/<str:producto_id>/comprar/",
+        purchase_product,
+        name="purchase-product",
+    ),
+    path("dashboard/", admin_dashboard, name="admin-dashboard"),
+    path(
+        "dashboard/productos/<str:producto_id>/eliminar/",
+        delete_product,
+        name="delete-product",
+    ),
+    path(
+        "dashboard/productos/<str:producto_id>/eliminar/confirmar/",
+        confirm_delete_product,
+        name="confirm-delete-product",
+    ),
+    path(
+        "dashboard/productos/<str:producto_id>/editar/",
+        edit_product,
+        name="edit-product",
+    ),
+    path("dashboard/productos/nuevo/", new_product, name="new-product"),
 ]

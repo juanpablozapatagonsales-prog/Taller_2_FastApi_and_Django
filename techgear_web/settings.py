@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 
 from django.core.management.utils import get_random_secret_key
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,11 +23,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or get_random_secret_key()
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get(
+    "DEBUG",
+    "False" if os.environ.get("VERCEL") == "1" else "True",
+).lower() in {"1", "true", "yes"}
+
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "").strip()
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured(
+            "Falta DJANGO_SECRET_KEY. Configura esta variable para producción."
+        )
+    SECRET_KEY = get_random_secret_key()
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -34,8 +43,17 @@ ALLOWED_HOSTS = [
     '.vercel.app', #deploy Django on Vercel
     '.onrender.com' #deploy en FastAPI en render
 ]
-FASTAPI_BASE_URL = os.environ.get("FASTAPI_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 FASTAPI_TIMEOUT = 5
+API_URL = os.environ.get("API_URL", "http://127.0.0.1:8001")
+API_TIMEOUT = 5
+CSRF_TRUSTED_ORIGINS = ["https://*.vercel.app"]
+LOGIN_URL = "/ingresar/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = not DEBUG
 
 
 # Application definition
@@ -52,6 +70,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -74,6 +93,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'techgear_web.store.context_processors.template_user',
             ],
         },
     },
@@ -127,7 +147,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+WHITENOISE_USE_FINDERS = True
 
 
 # Email

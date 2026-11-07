@@ -18,11 +18,10 @@ class ProductoPedidoCreate(BaseModel):
 
 class ProductoPedido(ProductoPedidoCreate):
     nombre: str = Field(min_length=1, max_length=120)
-    precio_unitario: float = Field(gt=0)
+    precio_unitario: float = Field(ge=0)
 
 
 class PedidoCreate(BaseModel):
-    usuario_id: MongoId
     productos: list[ProductoPedidoCreate] = Field(min_length=1)
 
 
@@ -30,9 +29,9 @@ class Pedido(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     id: MongoId | None = Field(default=None, alias="_id")
-    usuario_id: MongoId
+    usuario_id: str = Field(min_length=1, max_length=128)
     productos: list[ProductoPedido] = Field(min_length=1)
-    total: float = Field(gt=0)
+    total: float = Field(ge=0)
     estado: Literal["pendiente", "pagado", "enviado", "entregado", "cancelado"] = (
         "pendiente"
     )

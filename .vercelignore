@@ -1,0 +1,11 @@
+.env
+**/.env
+virtual/
+.venv/
+**/__pycache__/
+.pytest_cache/
+**/.pytest_cache/
+staticfiles/
+**/staticfiles/
+db.sqlite3
+.vercel/

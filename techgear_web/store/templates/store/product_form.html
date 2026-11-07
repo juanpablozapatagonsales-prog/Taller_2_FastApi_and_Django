@@ -1,0 +1,43 @@
+{% extends "store/base.html" %}
+
+{% block title %}{% if editando %}Editar{% else %}Crear{% endif %} producto — TechGear{% endblock %}
+{% block description %}Formulario para administrar un producto.{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8 col-xl-7">
+    <section class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h2 mb-4">{% if editando %}Editar producto{% else %}Crear producto{% endif %}</h1>
+        <form method="post">
+          {% csrf_token %}
+          {% for campo in form %}
+          {% if campo.field.widget.input_type == "checkbox" %}
+          <div class="form-check mb-3">
+            {{ campo }}
+            <label class="form-check-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+          </div>
+          {% else %}
+          <div class="mb-3">
+            <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+            {{ campo }}
+            {% if campo.name == "imagen" and producto.imagen %}
+            <img class="img-thumbnail d-block mt-2" src="{{ producto.imagen }}" alt="Imagen actual de {{ producto.nombre }}"
+              width="160" height="120" loading="lazy" decoding="async">
+            {% endif %}
+          </div>
+          {% endif %}
+          {% for error in campo.errors %}
+          <div class="invalid-feedback d-block mb-2">{{ error }}</div>
+          {% endfor %}
+          {% endfor %}
+          <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+            <button class="btn btn-primary btn-lg" type="submit">{% if editando %}Guardar cambios{% else %}Crear producto{% endif %}</button>
+            <a class="btn btn-outline-secondary btn-lg" href="{% url 'admin-dashboard' %}">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

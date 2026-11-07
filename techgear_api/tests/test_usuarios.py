@@ -1,17 +1,22 @@
+import os
 import sys
 import unittest
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
 
+import jwt
 from bson import ObjectId
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from passlib.context import CryptContext
 
+os.environ.setdefault("JWT_SECRET", "test-jwt-secret-long-enough-for-hs256")
 API_SRC = Path(__file__).resolve().parents[1] / "src"
 sys.path.insert(0, str(API_SRC))
 
+from model.auth import JWT_SECRET
 from model.database import build_mongodb_url, db_manager
-from routers import usuarios
+from routers import productos, usuarios
 
 
 class FakeUsersCollection:
@@ -19,16 +24,33 @@ class FakeUsersCollection:
         self.documents = {}
 
     async def find_one(self, query):
-        if "email" in query:
-            return next(
-                (
-                    document
-                    for document in self.documents.values()
-                    if document["email"] == query["email"]
-                ),
-                None,
-            )
-        return self.documents.get(query["_id"])
+        if "_id" in query:
+            return self.documents.get(query["_id"])
+        key, value = next(iter(query.items()))
+        return next(
+            (
+                user
+                for user in self.documents.values()
+                if user.get(key) == value
+            ),
+            None,
+        )
+
+    async def insert_one(self, document):
+        inserted_id = ObjectId()
+        self.documents[inserted_id] = {**document, "_id": inserted_id}
+
+        class InsertResult:
+            pass
+
+        result = InsertResult()
+        result.inserted_id = inserted_id
+        return result
+
+
+class FakeCollection:
+    def __init__(self):
+        self.documents = {}
 
     async def insert_one(self, document):
         inserted_id = ObjectId()
@@ -45,6 +67,7 @@ class FakeUsersCollection:
 class FakeDatabase:
     def __init__(self):
         self.users = FakeUsersCollection()
+        self.productos = FakeCollection()
 
 
 class UserAuthEndpointTests(unittest.TestCase):
@@ -53,10 +76,11 @@ class UserAuthEndpointTests(unittest.TestCase):
         db_manager.db = FakeDatabase()
         self.app = FastAPI()
         self.app.include_router(usuarios.router)
+        self.app.include_router(productos.router)
         self.client = TestClient(self.app)
         self.user_data = {
             "username": "camila",
-            "email": "camila@example.com",
+            "correo": "camila@example.com",
             "password": "unaclave-larga-y-segura-2026",
         }
 
@@ -64,79 +88,167 @@ class UserAuthEndpointTests(unittest.TestCase):
         self.client.close()
         db_manager.db = self.original_db
 
-    def test_registration_saves_bcrypt_hash_and_returns_jwt(self):
-        response = self.client.post("/usuarios/", json=self.user_data)
+    def token_for(self, user_id, rol="cliente", expires=None):
+        return jwt.encode(
+            {
+                "sub": str(user_id),
+                "username": "camila",
+                "rol": rol,
+                "exp": expires or datetime.now(timezone.utc) + timedelta(minutes=5),
+            },
+            JWT_SECRET,
+            algorithm="HS256",
+        )
+
+    def test_registration_saves_bcrypt_hash_and_always_sets_client_role(self):
+        response = self.client.post("/usuarios/registro", json=self.user_data)
 
         self.assertEqual(response.status_code, 201)
         result = response.json()
-        self.assertEqual(result["email"], self.user_data["email"])
-        self.assertEqual(result["token_type"], "bearer")
-        self.assertNotEqual(
-            db_manager.db.users.documents[ObjectId(result["id"])]["hashed_password"],
-            self.user_data["password"],
+        self.assertEqual(result["correo"], self.user_data["correo"])
+        self.assertEqual(result["rol"], "cliente")
+        self.assertNotIn("access_token", result)
+        saved = db_manager.db.users.documents[ObjectId(result["id"])]
+        self.assertTrue(
+            CryptContext(schemes=["bcrypt"]).verify(
+                self.user_data["password"],
+                saved["hashed_password"],
+            )
+        )
+        self.assertEqual(saved["rol"], "cliente")
+
+    def test_registration_rejects_duplicate_email_with_409(self):
+        self.client.post("/usuarios/registro", json=self.user_data)
+
+        response = self.client.post("/usuarios/registro", json=self.user_data)
+
+        self.assertEqual(response.status_code, 409)
+
+    def test_registration_requires_eight_character_password(self):
+        response = self.client.post(
+            "/usuarios/registro",
+            json={**self.user_data, "password": "short"},
         )
 
-    def test_duplicate_email_is_rejected(self):
-        self.client.post("/usuarios/", json=self.user_data)
+        self.assertEqual(response.status_code, 422)
 
-        response = self.client.post("/usuarios/", json=self.user_data)
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["detail"], "El correo ya está registrado")
-
-    def test_login_verifies_password_saved_in_mongodb(self):
-        self.client.post("/usuarios/", json=self.user_data)
+    def test_login_returns_identity_and_signed_jwt(self):
+        self.client.post("/usuarios/registro", json=self.user_data)
 
         response = self.client.post(
             "/usuarios/login",
             json={
-                "email": self.user_data["email"],
+                "correo": self.user_data["correo"],
                 "password": self.user_data["password"],
             },
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["email"], self.user_data["email"])
-        self.assertTrue(response.json()["access_token"])
+        result = response.json()
+        self.assertEqual(result["token_type"], "bearer")
+        self.assertEqual(result["rol"], "cliente")
+        self.assertEqual(result["correo"], self.user_data["correo"])
+        payload = jwt.decode(
+            result["access_token"],
+            JWT_SECRET,
+            algorithms=["HS256"],
+        )
+        self.assertEqual(payload["sub"], result["id"])
+        self.assertEqual(payload["username"], "camila")
+        self.assertEqual(payload["rol"], "cliente")
 
-    def test_login_rejects_wrong_password(self):
-        self.client.post("/usuarios/", json=self.user_data)
+    def test_login_with_wrong_password_returns_401_and_spanish_message(self):
+        self.client.post("/usuarios/registro", json=self.user_data)
 
         response = self.client.post(
             "/usuarios/login",
-            json={"email": self.user_data["email"], "password": "wrong-password"},
+            json={
+                "correo": self.user_data["correo"],
+                "password": "incorrecta",
+            },
         )
 
         self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.json()["detail"],
+            "El correo o la contraseña no son correctos",
+        )
 
-    def test_me_checks_jwt_and_reads_user_from_mongodb(self):
-        created = self.client.post("/usuarios/", json=self.user_data).json()
+    def test_me_returns_current_user_and_rejects_expired_token(self):
+        user_id = ObjectId()
+        db_manager.db.users.documents[user_id] = {
+            "_id": user_id,
+            "username": "camila",
+            "correo": "camila@example.com",
+            "rol": "cliente",
+            "hashed_password": "not-used",
+        }
+        good_token = self.token_for(user_id)
 
         response = self.client.get(
             "/usuarios/me",
-            headers={"Authorization": f"Bearer {created['access_token']}"},
+            headers={"Authorization": f"Bearer {good_token}"},
         )
-
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["id"], created["id"])
-        self.assertEqual(response.json()["email"], self.user_data["email"])
+        self.assertEqual(response.json()["id"], str(user_id))
+        self.assertEqual(response.json()["rol"], "cliente")
 
-    def test_me_rejects_invalid_token(self):
-        response = self.client.get(
+        expired_token = self.token_for(
+            user_id,
+            expires=datetime.now(timezone.utc) - timedelta(minutes=1),
+        )
+        expired = self.client.get(
             "/usuarios/me",
-            headers={"Authorization": "Bearer invalid-token"},
+            headers={"Authorization": f"Bearer {expired_token}"},
+        )
+        self.assertEqual(expired.status_code, 401)
+
+    def test_customer_cannot_create_product_but_admin_can(self):
+        customer_id = ObjectId()
+        admin_id = ObjectId()
+        for user_id, rol in ((customer_id, "cliente"), (admin_id, "admin")):
+            db_manager.db.users.documents[user_id] = {
+                "_id": user_id,
+                "username": rol,
+                "correo": f"{rol}@example.com",
+                "rol": rol,
+            }
+        payload = {
+            "nombre": "Mouse",
+            "descripcion": "Mouse inalámbrico",
+            "precio": 25,
+            "unidades": 3,
+            "activo": True,
+        }
+
+        forbidden = self.client.post(
+            "/productos/",
+            json=payload,
+            headers={"Authorization": f"Bearer {self.token_for(customer_id)}"},
+        )
+        created = self.client.post(
+            "/productos/",
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {self.token_for(admin_id, 'admin')}"
+            },
         )
 
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(forbidden.status_code, 403)
+        self.assertEqual(created.status_code, 201)
 
     def test_password_in_mongo_uri_takes_precedence_over_clave(self):
         uri = "mongodb+srv://test-user:uri-password@cluster.example.mongodb.net/"
 
         configured_uri = build_mongodb_url(uri, "different-clave")
 
+        from urllib.parse import urlsplit
+
         self.assertEqual(urlsplit(configured_uri).password, "uri-password")
 
     def test_clave_is_used_when_mongo_uri_has_no_password(self):
+        from urllib.parse import unquote, urlsplit
+
         uri = "mongodb+srv://test-user@cluster.example.mongodb.net/"
 
         configured_uri = build_mongodb_url(uri, "a password with spaces")
@@ -145,7 +257,3 @@ class UserAuthEndpointTests(unittest.TestCase):
             unquote(urlsplit(configured_uri).password or ""),
             "a password with spaces",
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

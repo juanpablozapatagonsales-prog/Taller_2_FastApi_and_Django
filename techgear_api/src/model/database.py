@@ -65,6 +65,7 @@ async def lifespan(app: FastAPI):
     db_manager.db = db_manager.client[DATABASE_NAME]
     try:
         await db_manager.client.admin.command("ping")
+        await db_manager.db.users.create_index("correo", unique=True, sparse=True)
         print("¡Conectado a MongoDB Atlas!")
     except Exception as e:
         print("Error de conexión:", e)

@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d6efd">
+  <title>{% block title %}TechGear{% endblock %}</title>
+  <meta name="description" content="{% block description %}Tienda de tecnología TechGear.{% endblock %}">
+  <link rel="icon" href="{% static 'store/images/favicon.svg' %}" type="image/svg+xml">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<body class="d-flex min-vh-100 flex-column">
+  <a class="visually-hidden-focusable position-absolute top-0 start-0 z-3 p-3 bg-body" href="#contenido">
+    Saltar al contenido
+  </a>
+
+  <header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom" aria-label="Navegación principal">
+      <div class="container">
+        <a class="navbar-brand fw-bold d-inline-flex align-items-center gap-2" href="/">
+          <img src="{% static 'store/images/techgear-mark.svg' %}" alt="" width="32" height="32">
+          TechGear
+        </a>
+        <button class="navbar-toggler p-3" type="button" data-bs-toggle="collapse" data-bs-target="#primaryNav"
+          aria-controls="primaryNav" aria-expanded="false" aria-label="Abrir menú de navegación">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="primaryNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+            <li class="nav-item">
+              <a class="nav-link py-3{% if request.path == '/productos/' %} active{% endif %}" href="/productos/"
+                {% if request.path == '/productos/' %}aria-current="page"{% endif %}>Productos</a>
+            </li>
+          {% if user.is_authenticated %}
+          {% if user.is_staff %}
+            <li class="nav-item"><a class="nav-link py-3" href="/dashboard/">Panel</a></li>
+          {% endif %}
+            <li class="nav-item"><span class="navbar-text">{{ user.username }}</span></li>
+            <li class="nav-item">
+              <form action="/salir/" method="post">
+              {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary btn-lg">Salir</button>
+              </form>
+            </li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link py-3" href="/ingresar/">Ingresar</a></li>
+            <li class="nav-item"><a class="nav-link py-3" href="/admin-ingresar/">Administrador</a></li>
+          {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  {% if messages %}
+  <div class="container mt-3" aria-live="polite">
+    {% for message in messages %}
+    <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}"
+      role="{% if message.tags == 'error' %}alert{% else %}status{% endif %}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main id="contenido" class="container flex-grow-1 py-4 py-lg-5">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="bg-dark text-light mt-auto py-4">
+    <div class="container">
+      <div class="row gy-3 align-items-center">
+        <div class="col-12 col-md">
+          <a class="link-light text-decoration-none fw-bold d-inline-flex align-items-center gap-2" href="/">
+            <img src="{% static 'store/images/techgear-mark.svg' %}" alt="" width="28" height="28">
+            TechGear
+          </a>
+          <p class="mb-0 mt-2">Tecnología para el día a día.</p>
+        </div>
+        <div class="col-12 col-md-auto">
+          <nav aria-label="Navegación del pie de página">
+            <ul class="nav flex-wrap gap-2">
+              <li class="nav-item"><a class="nav-link link-light px-2 py-3" href="/productos/">Productos</a></li>
+              {% if not user.is_authenticated %}
+              <li class="nav-item"><a class="nav-link link-light px-2 py-3" href="/ingresar/">Ingresar</a></li>
+              <li class="nav-item"><a class="nav-link link-light px-2 py-3" href="/registro/">Crear cuenta</a></li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <p class="border-top border-secondary mt-3 pt-3 mb-0 small">© {% now "Y" %} TechGear</p>
+    </div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"
+    defer></script>
+</body>
+
+</html>
