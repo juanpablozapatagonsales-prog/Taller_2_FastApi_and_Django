@@ -3,7 +3,13 @@ from fastapi import FastAPI
 from model.database import lifespan
 from routers import pedidos, productos, usuarios
 
-app = FastAPI(title="Taller FastAPI", lifespan=lifespan)
+app = FastAPI(
+    title="Taller FastAPI",
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json"
+)
 
 app.include_router(usuarios.router)
 app.include_router(productos.router)
