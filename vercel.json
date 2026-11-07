@@ -14,7 +14,7 @@
     },
     "api": {
       "root": "techgear_api/",
-      "entrypoint": "src.main:app"
+      "entrypoint": "src/main.py"
     }
   },
   "rewrites": [
