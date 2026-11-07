@@ -1,7 +1,7 @@
 {
   "services": {
     "django": {
-      "root": ".",
+      "root": "./",
       "entrypoint": "techgear_web/wsgi.py",
       "bindings": [
         {
@@ -14,15 +14,8 @@
     },
     "api": {
       "root": "techgear_api/",
-      "entrypoint": "src/main.py"
+      "entrypoint": "src.main:app"
     }
   },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": {
-        "service": "django"
-      }
-    }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": { "service": "django" } }]
 }

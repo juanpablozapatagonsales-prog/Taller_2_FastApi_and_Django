@@ -43,10 +43,10 @@ ALLOWED_HOSTS = [
     '.vercel.app', #deploy Django on Vercel
     '.onrender.com' #deploy en FastAPI en render
 ]
-FASTAPI_TIMEOUT = 5
+FASTAPI_TIMEOUT = 15
 API_URL = os.environ.get("API_URL", "http://127.0.0.1:8001")
-API_TIMEOUT = 5
-CSRF_TRUSTED_ORIGINS = ["https://*.vercel.app"]
+API_TIMEOUT = 15
+CSRF_TRUSTED_ORIGINS = ["https://*.vercel.app", "https://*.onrender.com"]
 LOGIN_URL = "/ingresar/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

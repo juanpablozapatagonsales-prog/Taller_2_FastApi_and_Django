@@ -6,3 +6,6 @@ __pycache__/
 .env
 staticfiles/
 db.sqlite3
+.vercel
+.env*
+.vercel/

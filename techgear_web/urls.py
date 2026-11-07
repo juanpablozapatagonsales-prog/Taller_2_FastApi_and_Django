@@ -14,8 +14,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
+from django.http import HttpResponse
 from django.urls import path
+from django.views.generic import RedirectView
 
 from techgear_web.store.views import (
     admin_dashboard,
@@ -32,7 +35,22 @@ from techgear_web.store.views import (
     purchase_product,
 )
 
+
+def robots_txt(request):
+    contenido = (settings.BASE_DIR / "robots.txt").read_text(encoding="utf-8")
+    return HttpResponse(contenido, content_type="text/plain")
+
+
 urlpatterns = [
+    path("robots.txt", robots_txt, name="robots-txt"),
+    path(
+        "favicon.ico",
+        RedirectView.as_view(
+            url="/static/store/images/favicon.svg",
+            permanent=False,
+        ),
+        name="favicon",
+    ),
     path("admin/", admin.site.urls),
     path("", home_view, name="home"),
     path("ingresar/", client_login, name="client-login"),
